@@ -9,3 +9,13 @@ export const GET_USERS_QUERY = gql`
     }
   }
 `;
+
+export const GET_USER_QUERY = gql`
+  query GetUser($data: GetUserInput!) {
+    getUser(data: $data) {
+      id
+      name
+      email
+    }
+  }
+`;
