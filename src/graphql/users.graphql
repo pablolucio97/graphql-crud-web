@@ -27,3 +27,11 @@
       id
     }
   }
+
+  mutation UpdateUser($data : UpdateUserInput!){
+	updateUser(data: $data){
+		id
+		name
+	}
+}
+

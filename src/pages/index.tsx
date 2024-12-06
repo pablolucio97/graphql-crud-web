@@ -6,10 +6,11 @@ import {
   useDeleteUserMutation,
   useGetUserLazyQuery,
   useGetUsersQuery,
+  useUpdateUserMutation,
 } from "../generated/graphql";
 
 const UsersScreen: React.FC = () => {
-  const [, setUserId] = useState("");
+  const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -80,7 +81,6 @@ const UsersScreen: React.FC = () => {
 
   const handleDeleteUser = useCallback(
     (userId: string) => {
-      handleSelectUser(userId);
       deleteUser({
         variables: {
           data: {
@@ -96,12 +96,43 @@ const UsersScreen: React.FC = () => {
         },
       });
     },
-    [deleteUser, deleteUserData, handleSelectUser, refetchUsers]
+    [deleteUser, deleteUserData, refetchUsers]
   );
 
+  const [
+    updateUser,
+    { data: updatedUser, error: updateUserError, loading: updateUserLoading },
+  ] = useUpdateUserMutation();
+
   const loading =
-    usersLoading || userLoading || createUserLoading || deleteUserLoading;
-  const error = usersError || userError || createdUserError || deleteUserError;
+    usersLoading ||
+    userLoading ||
+    createUserLoading ||
+    deleteUserLoading ||
+    updateUserLoading;
+  const error =
+    usersError ||
+    userError ||
+    createdUserError ||
+    deleteUserError ||
+    updateUserError;
+
+  const handleUpdateUser = useCallback(() => {
+    updateUser({
+      variables: {
+        data: {
+          id: userId,
+          name,
+        },
+      },
+      onCompleted: () => {
+        console.log("User updated successfully!", updatedUser);
+      },
+      onError: (error) => {
+        console.log("Error at trying to create user: ", error);
+      },
+    });
+  }, [name, updateUser, updatedUser, userId]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -149,26 +180,46 @@ const UsersScreen: React.FC = () => {
         {/* Create user form */}
         <div className="flex flex-col border-r-2 px-8">
           <h2 className="my-3 text-xl font-bold">Create user</h2>
-          <div className="mb-2">
-            <Input
-              label="Name"
-              value={name}
-              onChange={(val) => setName(val.target.value)}
+          <form onSubmit={handleCreateUser}>
+            <div className="mb-2">
+              <Input
+                label="Name"
+                value={name}
+                onChange={(val) => setName(val.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+                label="Email"
+                value={email}
+                onChange={(val) => setEmail(val.target.value)}
+              />
+            </div>
+            <Button
+              label="Create user"
+              type="submit"
+              disabled={!email || !name}
             />
-          </div>
-          <div className="mb-4">
-            <Input
-              label="Email"
-              value={email}
-              onChange={(val) => setEmail(val.target.value)}
-            />
-          </div>
-          <Button
-            label="Create user"
-            onClick={handleCreateUser}
-            disabled={!email || !name}
-          />
+          </form>
         </div>
+
+        {/* Update user form */}
+        {userId && (
+          <div className="flex flex-col border-r-2 px-8">
+            <h2 className="my-3 text-xl font-bold">Update user</h2>
+            <form onSubmit={handleUpdateUser}>
+              <div className="mb-4">
+                <Input
+                  label="Name"
+                  value={name}
+                  onChange={(val) => setName(val.target.value)}
+                />
+              </div>
+
+              <Button label="Update user" type="submit" disabled={!name} />
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
