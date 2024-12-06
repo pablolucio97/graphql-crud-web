@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
+import PhotoCard from "../../components/PhotoCard";
 import { useListPhotosQuery } from "../../generated/graphql";
 
 const PhotosScreen: React.FC = () => {
@@ -35,16 +36,14 @@ const PhotosScreen: React.FC = () => {
             {photosData &&
               photosData.listPhotos &&
               photosData.listPhotos.map((photo) => (
-                <li className="flex items-center mb-2" key={photo.id}>
-                  <p className="mx-3">{photo.url}</p>
-                  <p className="mr-3">{photo.likes}</p>
-                  <Button label="Get photo" onClick={() => {}} />
-                  <Button
-                    label="Delete User"
-                    className="bg-red-200 rounded-md px-4 h-[3rem] ml-2"
-                    onClick={() => {}}
-                  />
-                </li>
+                <PhotoCard
+                  key={photo.id}
+                  id={photo.id}
+                  url={photo.url}
+                  likes={photo.likes}
+                  onDelete={() => {}}
+                  onGet={() => {}}
+                />
               ))}
           </ul>
         </div>

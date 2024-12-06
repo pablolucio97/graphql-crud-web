@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
+import UserCard from "../../components/UserCard";
 import {
   useCreateUserMutation,
   useDeleteUserMutation,
@@ -159,19 +160,14 @@ const UsersScreen: React.FC = () => {
               usersData.getUsers &&
               usersData.getUsers.map(
                 (user: { id: string; name: string; email: string }) => (
-                  <li className="flex items-center mb-2" key={user.id}>
-                    <p className="mx-3">{user.name}</p>
-                    <p className="mr-3">{user.email}</p>
-                    <Button
-                      label="Get User"
-                      onClick={() => handleFetchUser(user.id)}
-                    />
-                    <Button
-                      label="Delete User"
-                      className="bg-red-200 rounded-md px-4 h-[3rem] ml-2"
-                      onClick={() => handleDeleteUser(user.id)}
-                    />
-                  </li>
+                  <UserCard
+                    key={user.id}
+                    id={user.id}
+                    name={user.name}
+                    email={user.email}
+                    onDelete={() => handleDeleteUser(user.id)}
+                    onGet={() => handleFetchUser(user.id)}
+                  />
                 )
               )}
           </ul>
