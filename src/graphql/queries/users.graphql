@@ -14,3 +14,10 @@
       email
     }
   }
+
+  mutation CreateUser($data: CreateUserInput!){
+    createUser(data: $data){
+      name
+      email
+    }
+  }
