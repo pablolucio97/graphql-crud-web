@@ -15,7 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTime: { input: Date; output: Date; }
+  DateTime: { input: any; output: any; }
 };
 
 export type CreatePhotoInput = {
@@ -144,6 +144,18 @@ export type User = {
   name: Scalars['String']['output'];
 };
 
+export type ListPhotosQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListPhotosQuery = { __typename?: 'Query', listPhotos: Array<{ __typename?: 'Photo', id: string, url: string, likes: number, isPrivate: boolean }> };
+
+export type GetPhotosByUserQueryVariables = Exact<{
+  data: GetPhotosByUserInput;
+}>;
+
+
+export type GetPhotosByUserQuery = { __typename?: 'Query', getPhotosByUser: Array<{ __typename?: 'Photo', id: string, url: string, likes: number, isPrivate: boolean }> };
+
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -178,6 +190,91 @@ export type UpdateUserMutationVariables = Exact<{
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string } };
 
 
+export const ListPhotosDocument = gql`
+    query ListPhotos {
+  listPhotos {
+    id
+    url
+    likes
+    isPrivate
+  }
+}
+    `;
+
+/**
+ * __useListPhotosQuery__
+ *
+ * To run a query within a React component, call `useListPhotosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListPhotosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListPhotosQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useListPhotosQuery(baseOptions?: Apollo.QueryHookOptions<ListPhotosQuery, ListPhotosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListPhotosQuery, ListPhotosQueryVariables>(ListPhotosDocument, options);
+      }
+export function useListPhotosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListPhotosQuery, ListPhotosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListPhotosQuery, ListPhotosQueryVariables>(ListPhotosDocument, options);
+        }
+export function useListPhotosSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ListPhotosQuery, ListPhotosQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ListPhotosQuery, ListPhotosQueryVariables>(ListPhotosDocument, options);
+        }
+export type ListPhotosQueryHookResult = ReturnType<typeof useListPhotosQuery>;
+export type ListPhotosLazyQueryHookResult = ReturnType<typeof useListPhotosLazyQuery>;
+export type ListPhotosSuspenseQueryHookResult = ReturnType<typeof useListPhotosSuspenseQuery>;
+export type ListPhotosQueryResult = Apollo.QueryResult<ListPhotosQuery, ListPhotosQueryVariables>;
+export const GetPhotosByUserDocument = gql`
+    query GetPhotosByUser($data: GetPhotosByUserInput!) {
+  getPhotosByUser(data: $data) {
+    id
+    url
+    likes
+    isPrivate
+  }
+}
+    `;
+
+/**
+ * __useGetPhotosByUserQuery__
+ *
+ * To run a query within a React component, call `useGetPhotosByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPhotosByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPhotosByUserQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useGetPhotosByUserQuery(baseOptions: Apollo.QueryHookOptions<GetPhotosByUserQuery, GetPhotosByUserQueryVariables> & ({ variables: GetPhotosByUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>(GetPhotosByUserDocument, options);
+      }
+export function useGetPhotosByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>(GetPhotosByUserDocument, options);
+        }
+export function useGetPhotosByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>(GetPhotosByUserDocument, options);
+        }
+export type GetPhotosByUserQueryHookResult = ReturnType<typeof useGetPhotosByUserQuery>;
+export type GetPhotosByUserLazyQueryHookResult = ReturnType<typeof useGetPhotosByUserLazyQuery>;
+export type GetPhotosByUserSuspenseQueryHookResult = ReturnType<typeof useGetPhotosByUserSuspenseQuery>;
+export type GetPhotosByUserQueryResult = Apollo.QueryResult<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers {
   getUsers {

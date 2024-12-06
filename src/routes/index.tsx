@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import UsersScreen from "../pages";
 import PhotosScreen from "../pages/photos";
+import UsersScreen from "../pages/users";
 
 type route = {
   path: string;

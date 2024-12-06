@@ -1,0 +1,17 @@
+query ListPhotos{
+    listPhotos{
+        id
+        url
+        likes
+        isPrivate
+    }
+}
+
+query GetPhotosByUser($data : GetPhotosByUserInput!){
+    getPhotosByUser(data : $data){
+        id
+        url
+		likes
+		isPrivate
+    }
+}

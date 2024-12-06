@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
-import { Button } from "../components/Button";
-import { Input } from "../components/Input";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 import {
   useCreateUserMutation,
   useDeleteUserMutation,
   useGetUserLazyQuery,
   useGetUsersQuery,
   useUpdateUserMutation,
-} from "../generated/graphql";
+} from "../../generated/graphql";
 
 const UsersScreen: React.FC = () => {
   const [userId, setUserId] = useState("");
@@ -134,12 +135,21 @@ const UsersScreen: React.FC = () => {
     });
   }, [name, updateUser, updatedUser, userId]);
 
+  const navigate = useNavigate();
+
+  const handleNavigatePhotos = () => {
+    navigate("/photos");
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="w-full flex flex-col p-8">
       <h1 className="text-gray-900 text-3xl font-bold">Users</h1>
+      <div className="my-5">
+        <Button label="Go to photos page" onClick={handleNavigatePhotos} />
+      </div>
       <div className="flex flex-row">
         {/* List and get users */}
         <div className="flex flex-col border-r-2 pr-8">
@@ -205,7 +215,7 @@ const UsersScreen: React.FC = () => {
 
         {/* Update user form */}
         {userId && (
-          <div className="flex flex-col border-r-2 px-8">
+          <div className="flex flex-col px-8">
             <h2 className="my-3 text-xl font-bold">Update user</h2>
             <form onSubmit={handleUpdateUser}>
               <div className="mb-4">
