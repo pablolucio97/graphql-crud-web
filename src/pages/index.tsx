@@ -3,6 +3,7 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import {
   useCreateUserMutation,
+  useDeleteUserMutation,
   useGetUserLazyQuery,
   useGetUsersQuery,
 } from "../generated/graphql";
@@ -23,9 +24,13 @@ const UsersScreen: React.FC = () => {
     { data: userData, loading: userLoading, error: userError, called },
   ] = useGetUserLazyQuery();
 
-  const selectAndFetchUser = useCallback(
+  const handleSelectUser = useCallback((userId: string) => {
+    setUserId(userId);
+  }, []);
+
+  const handleFetchUser = useCallback(
     (userId: string) => {
-      setUserId(userId);
+      handleSelectUser(userId);
       getUser({
         variables: {
           data: {
@@ -34,7 +39,7 @@ const UsersScreen: React.FC = () => {
         },
       });
     },
-    [getUser]
+    [getUser, handleSelectUser]
   );
 
   const [
@@ -55,18 +60,48 @@ const UsersScreen: React.FC = () => {
         },
       },
       onCompleted: () => {
-        console.log("User created successfully!");
+        console.log("User created successfully!", createUserData);
         refetchUsers();
       },
       onError: (error) => {
         console.log("Error at trying to create user: ", error);
       },
     });
-    console.log(createUserData);
   };
 
-  const loading = usersLoading || userLoading || createUserLoading;
-  const error = usersError || userError || createdUserError;
+  const [
+    deleteUser,
+    {
+      data: deleteUserData,
+      error: deleteUserError,
+      loading: deleteUserLoading,
+    },
+  ] = useDeleteUserMutation();
+
+  const handleDeleteUser = useCallback(
+    (userId: string) => {
+      handleSelectUser(userId);
+      deleteUser({
+        variables: {
+          data: {
+            id: userId,
+          },
+        },
+        onCompleted: () => {
+          console.log("User deleted successfully!", deleteUserData);
+          refetchUsers();
+        },
+        onError: (error) => {
+          console.log("Error at trying to create user: ", error);
+        },
+      });
+    },
+    [deleteUser, deleteUserData, handleSelectUser, refetchUsers]
+  );
+
+  const loading =
+    usersLoading || userLoading || createUserLoading || deleteUserLoading;
+  const error = usersError || userError || createdUserError || deleteUserError;
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -75,6 +110,7 @@ const UsersScreen: React.FC = () => {
     <div className="w-full flex flex-col p-8">
       <h1 className="text-gray-900 text-3xl font-bold">Users</h1>
       <div className="flex flex-row">
+        {/* List and get users */}
         <div className="flex flex-col border-r-2 pr-8">
           <h2 className="my-3 text-xl font-bold">List of users</h2>
           <ul className="mb-4">
@@ -87,7 +123,12 @@ const UsersScreen: React.FC = () => {
                     <p className="mr-3">{user.email}</p>
                     <Button
                       label="Get User"
-                      onClick={() => selectAndFetchUser(user.id)}
+                      onClick={() => handleFetchUser(user.id)}
+                    />
+                    <Button
+                      label="Delete User"
+                      className="bg-red-200 rounded-md px-4 h-[3rem] ml-2"
+                      onClick={() => handleDeleteUser(user.id)}
                     />
                   </li>
                 )
@@ -105,6 +146,7 @@ const UsersScreen: React.FC = () => {
           )}
         </div>
 
+        {/* Create user form */}
         <div className="flex flex-col border-r-2 px-8">
           <h2 className="my-3 text-xl font-bold">Create user</h2>
           <div className="mb-2">

@@ -21,3 +21,9 @@
       email
     }
   }
+
+  mutation DeleteUser($data: DeleteUserInput!){
+    deleteUser(data: $data){
+      id
+    }
+  }
