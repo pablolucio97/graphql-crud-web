@@ -1,7 +1,6 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import { Button } from "../components/Button";
-import { GET_USER_QUERY, GET_USERS_QUERY } from "../graphql/queries/users";
+import { useGetUserLazyQuery, useGetUsersQuery } from "../generated/graphql";
 
 const UsersScreen: React.FC = () => {
   const [, setUserId] = useState("");
@@ -10,11 +9,11 @@ const UsersScreen: React.FC = () => {
     data: usersData,
     loading: usersLoading,
     error: usersError,
-  } = useQuery(GET_USERS_QUERY);
+  } = useGetUsersQuery();
   const [
     getUser,
     { data: userData, loading: userLoading, error: userError, called },
-  ] = useLazyQuery(GET_USER_QUERY);
+  ] = useGetUserLazyQuery();
 
   const loading = usersLoading || userLoading;
   const error = usersError || userError;
@@ -41,7 +40,7 @@ const UsersScreen: React.FC = () => {
       <h1 className="text-gray-900 text-3xl font-bold">Users</h1>
       <span className="my-3 text-xl font-bold">List of users</span>
       <ul className="mb-4">
-        {usersData.getUsers &&
+        {usersData && usersData.getUsers &&
           usersData.getUsers.map(
             (user: { id: string; name: string; email: string }) => (
               <li className="flex items-center mb-2" key={user.id}>
