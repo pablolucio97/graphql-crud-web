@@ -25,3 +25,9 @@ mutation CreatePhoto($data: CreatePhotoInput!){
 		userId
     }
 }
+
+mutation DeletePhoto($data: DeletePhotoInput!){
+    deletePhoto(data: $data){
+        id
+    }
+}

@@ -5,6 +5,8 @@ import PhotoCard from "../../components/PhotoCard";
 import UserCard from "../../components/UserCard";
 import {
   useCreatePhotoMutation,
+  useDeletePhotoMutation,
+  useDeleteUserMutation,
   useGetUsersQuery,
   useListPhotosQuery,
 } from "../../generated/graphql";
@@ -34,6 +36,7 @@ const PhotosScreen: React.FC = () => {
     data: usersData,
     loading: usersLoading,
     error: usersError,
+    refetch: refetchUsers,
   } = useGetUsersQuery();
 
   useEffect(() => {
@@ -75,8 +78,48 @@ const PhotosScreen: React.FC = () => {
     });
   };
 
-  const isLoading = photosLoading || createPhotoLoading || usersLoading;
-  const error = photosError || createPhotoError || usersError;
+  const [
+    deletePhoto,
+    { loading: deletePhotoLoading, error: deletePhotoError },
+  ] = useDeletePhotoMutation();
+
+  const handleDeletePhoto = (photoId: string) => {
+    deletePhoto({
+      variables: {
+        data: {
+          id: photoId,
+        },
+      },
+      onCompleted: () => refetchPhotos(),
+    });
+  };
+
+  const [deleteUser, { loading: deleteUserLoading, error: deleteUserError }] =
+    useDeleteUserMutation();
+
+  const handleDeleteUser = (userId: string) => {
+    deleteUser({
+      variables: {
+        data: {
+          id: userId,
+        },
+      },
+      onCompleted: () => refetchUsers(),
+    });
+  };
+
+  const isLoading =
+    photosLoading ||
+    createPhotoLoading ||
+    usersLoading ||
+    deletePhotoLoading ||
+    deleteUserLoading;
+  const error =
+    photosError ||
+    createPhotoError ||
+    usersError ||
+    deletePhotoError ||
+    deleteUserError;
 
   if (isLoading) <p>Loading...</p>;
   if (error) <p>Something went wrong</p>;
@@ -120,7 +163,7 @@ const PhotosScreen: React.FC = () => {
                   url={photo.url}
                   likes={photo.likes}
                   isPrivate={photo.isPrivate}
-                  onDelete={() => {}}
+                  onDelete={() => handleDeletePhoto(photo.id)}
                   onGet={() => {}}
                 />
               ))}
@@ -129,7 +172,7 @@ const PhotosScreen: React.FC = () => {
 
         {/* List users */}
         <div className="flex flex-col border-r-2 pr-8 ml-3">
-          <h2 className="my-3 text-xl font-bold">List of photos</h2>
+          <h2 className="my-3 text-xl font-bold">List of users</h2>
           <ul className="mb-4">
             {users &&
               users.map((user) => (
@@ -138,7 +181,7 @@ const PhotosScreen: React.FC = () => {
                   id={user.id}
                   name={user.name}
                   email={user.email}
-                  onDelete={() => {}}
+                  onDelete={() => handleDeleteUser(user.id)}
                   onGet={() => setSelectedUser(user)}
                   type="get-user-photos"
                 />
