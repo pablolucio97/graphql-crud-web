@@ -167,6 +167,7 @@ const UsersScreen: React.FC = () => {
                     email={user.email}
                     onDelete={() => handleDeleteUser(user.id)}
                     onGet={() => handleFetchUser(user.id)}
+                    type="get-user"
                   />
                 )
               )}

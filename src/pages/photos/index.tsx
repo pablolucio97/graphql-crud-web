@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import PhotoCard from "../../components/PhotoCard";
@@ -7,6 +7,7 @@ import {
   useCreatePhotoMutation,
   useDeletePhotoMutation,
   useDeleteUserMutation,
+  useGetPhotosByUserLazyQuery,
   useGetUsersQuery,
   useListPhotosQuery,
 } from "../../generated/graphql";
@@ -108,18 +109,48 @@ const PhotosScreen: React.FC = () => {
     });
   };
 
+  const [
+    getPhotosByUser,
+    {
+      data: photosByUserData,
+      loading: photosByUserLoading,
+      error: photosByUserError,
+    },
+  ] = useGetPhotosByUserLazyQuery();
+
+  const handleGetPhotosByUser = useCallback(
+    (userId: string) => {
+      getPhotosByUser({
+        variables: {
+          data: {
+            userId,
+          },
+        },
+      });
+    },
+    [getPhotosByUser]
+  );
+
+  useEffect(() => {
+    if (selectedUser) {
+      handleGetPhotosByUser(selectedUser.id);
+    }
+  }, [handleGetPhotosByUser, selectedUser]);
+
   const isLoading =
     photosLoading ||
     createPhotoLoading ||
     usersLoading ||
     deletePhotoLoading ||
-    deleteUserLoading;
+    deleteUserLoading ||
+    photosByUserLoading;
   const error =
     photosError ||
     createPhotoError ||
     usersError ||
     deletePhotoError ||
-    deleteUserError;
+    deleteUserError ||
+    photosByUserError;
 
   if (isLoading) <p>Loading...</p>;
   if (error) <p>Something went wrong</p>;
@@ -164,7 +195,6 @@ const PhotosScreen: React.FC = () => {
                   likes={photo.likes}
                   isPrivate={photo.isPrivate}
                   onDelete={() => handleDeletePhoto(photo.id)}
-                  onGet={() => {}}
                 />
               ))}
           </ul>
@@ -184,6 +214,25 @@ const PhotosScreen: React.FC = () => {
                   onDelete={() => handleDeleteUser(user.id)}
                   onGet={() => setSelectedUser(user)}
                   type="get-user-photos"
+                />
+              ))}
+          </ul>
+        </div>
+
+        {/* List of photos by user */}
+        <div className="flex flex-col pl-8">
+          <h2 className="my-3 text-xl font-bold">List of photos by user</h2>
+          <ul className="mb-4">
+            {photosByUserData &&
+              photosByUserData.getPhotosByUser &&
+              photosByUserData.getPhotosByUser.map((photo) => (
+                <PhotoCard
+                  key={photo.id}
+                  id={photo.id}
+                  url={photo.url}
+                  likes={photo.likes}
+                  isPrivate={photo.isPrivate}
+                  onDelete={() => handleDeletePhoto(photo.id)}
                 />
               ))}
           </ul>
