@@ -15,7 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
+  DateTime: { input: Date; output: Date; }
 };
 
 export type CreatePhotoInput = {
@@ -156,6 +156,13 @@ export type GetPhotosByUserQueryVariables = Exact<{
 
 export type GetPhotosByUserQuery = { __typename?: 'Query', getPhotosByUser: Array<{ __typename?: 'Photo', id: string, url: string, likes: number, isPrivate: boolean }> };
 
+export type CreatePhotoMutationVariables = Exact<{
+  data: CreatePhotoInput;
+}>;
+
+
+export type CreatePhotoMutation = { __typename?: 'Mutation', createPhoto: { __typename?: 'Photo', url: string, likes: number, isPrivate: boolean, postedAt: Date, userId: string } };
+
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -275,6 +282,43 @@ export type GetPhotosByUserQueryHookResult = ReturnType<typeof useGetPhotosByUse
 export type GetPhotosByUserLazyQueryHookResult = ReturnType<typeof useGetPhotosByUserLazyQuery>;
 export type GetPhotosByUserSuspenseQueryHookResult = ReturnType<typeof useGetPhotosByUserSuspenseQuery>;
 export type GetPhotosByUserQueryResult = Apollo.QueryResult<GetPhotosByUserQuery, GetPhotosByUserQueryVariables>;
+export const CreatePhotoDocument = gql`
+    mutation CreatePhoto($data: CreatePhotoInput!) {
+  createPhoto(data: $data) {
+    url
+    likes
+    isPrivate
+    postedAt
+    userId
+  }
+}
+    `;
+export type CreatePhotoMutationFn = Apollo.MutationFunction<CreatePhotoMutation, CreatePhotoMutationVariables>;
+
+/**
+ * __useCreatePhotoMutation__
+ *
+ * To run a mutation, you first call `useCreatePhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPhotoMutation, { data, loading, error }] = useCreatePhotoMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreatePhotoMutation(baseOptions?: Apollo.MutationHookOptions<CreatePhotoMutation, CreatePhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePhotoMutation, CreatePhotoMutationVariables>(CreatePhotoDocument, options);
+      }
+export type CreatePhotoMutationHookResult = ReturnType<typeof useCreatePhotoMutation>;
+export type CreatePhotoMutationResult = Apollo.MutationResult<CreatePhotoMutation>;
+export type CreatePhotoMutationOptions = Apollo.BaseMutationOptions<CreatePhotoMutation, CreatePhotoMutationVariables>;
 export const GetUsersDocument = gql`
     query GetUsers {
   getUsers {

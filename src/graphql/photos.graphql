@@ -15,3 +15,13 @@ query GetPhotosByUser($data : GetPhotosByUserInput!){
 		isPrivate
     }
 }
+
+mutation CreatePhoto($data: CreatePhotoInput!){
+    createPhoto(data: $data){
+        url
+		likes
+		isPrivate
+		postedAt
+		userId
+    }
+}
